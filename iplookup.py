@@ -27,7 +27,7 @@ Examples:
 import os
 import json
 import requests
-from utilities.utils import write_info, write_error, write_warning, docopt_read, docopt_error
+from utilities.utils import write_info, write_error, write_warning, docopt_read
 from utilities.certs import GOOGLE_PASSWORD, GOOGLE_USERNAME, GOOGLE_DOMAIN
 from utilities.certs import DISCORD_WEBHOOK, SLACK_WEBHOOK
 
@@ -51,12 +51,12 @@ def find_ip_address():
         response_page = ip_response.text
         address_start = response_page.find(PRECEDING_STRING) + len(PRECEDING_STRING)
         address_end = address_start + response_page[address_start:].find(PROCEEDING_STRING)
-        IP_string = response_page[address_start:address_end]
-        return IP_string
+        ip_string = response_page[address_start:address_end]
+        return ip_string
 
     except Exception as e:
         write_error(e)
-        raise Exception
+        raise e
 
 
 def notify_system(url, payload=None, headers=None):
@@ -74,7 +74,7 @@ def check_for_changes(ip_address):
         return False
     else:
         write_info("New IP address determined.")
-        with open(IP_FILE,'wb') as current_ip_file:
+        with open(IP_FILE, 'wb') as current_ip_file:
             stored_ip_address['ip'] = ip_address
             json.dump(stored_ip_address, current_ip_file)
             current_ip_file.close()
@@ -90,20 +90,17 @@ def main_execution(program_args):
 
     if check_for_changes(ip_address) or program_args['notify']:
         # Notify Slack channel
-
         write_info("Sending Address to Slack Channel")
         formatted_chat_string = CHAT_STRING.format(server=host, ip=ip_address)
-
         slack_payload = {"text": formatted_chat_string}
         formatted_slack_url = SLACK_HOOK_URL_BASE.format(service_address=SLACK_WEBHOOK)
-
         notify_system(formatted_slack_url, slack_payload)
 
         # Notify Discord channel
         write_info("Sending Address to Discord Channel")
         discord_payload = {"content": formatted_chat_string}
         formatted_discord_url = DISCORD_HOOK_URL_BASE.format(service_address=DISCORD_WEBHOOK)
-        notify_system(formatted_discord_url,discord_payload,{"Content-Type": "application/json"})
+        notify_system(formatted_discord_url, discord_payload, {"Content-Type": "application/json"})
         
         # Notify Google DNS
         write_info("Sending Address to Google DNS")
