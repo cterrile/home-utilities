@@ -31,11 +31,9 @@ from utilities.utils import write_info, write_error, write_warning, docopt_read,
 from utilities.certs import GOOGLE_PASSWORD, GOOGLE_USERNAME, GOOGLE_DOMAIN
 from utilities.certs import DISCORD_WEBHOOK, SLACK_WEBHOOK
 
-
+IP_URL = "https://www.iplocation.net/find-ip-address"
 PRECEDING_STRING = "Your IP Address is <span style='font-weight: bold; color:green;'>"
 PROCEEDING_STRING = "</span>"
-
-IP_URL = "https://www.iplocation.net/find-ip-address"
 
 CHAT_STRING = "`{server}` checking in with IP: `{ip}`"
 
@@ -44,7 +42,7 @@ GOOG_DNS_URL_BASE = "https://{username}:{password}@domains.google.com/nic/update
 SLACK_HOOK_URL_BASE = 'https://hooks.slack.com/services/{service_address}'
 DISCORD_HOOK_URL_BASE = 'https://discordapp.com/api/webhooks/{service_address}'
 
-IP_FILE ="C:\\Users\\cterr\\Projects\\home-utilities\\utilities\\ip.json"
+IP_FILE = "C:\\Users\\cterr\\Projects\\home-utilities\\utilities\\ip.json"
 
 
 def find_ip_address():
