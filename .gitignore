@@ -1,4 +1,4 @@
-/utilities/certs.py
+*certs.py
 *.ipynb
 .idea*
 *.pyc
