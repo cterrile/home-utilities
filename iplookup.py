@@ -30,6 +30,9 @@ import requests
 from utilities.utils import write_info, write_error, write_warning, docopt_read
 from utilities.certs import GOOGLE_PASSWORD, GOOGLE_USERNAME, GOOGLE_DOMAIN
 from utilities.certs import DISCORD_WEBHOOK, SLACK_WEBHOOK, IP_FILE
+from integrations.slack import Slack
+from integrations.discord import Discord
+from integrations.Webhook import Webhook
 
 IP_URL = "https://www.iplocation.net/find-ip-address"
 PRECEDING_STRING = "Your IP Address is <span style='font-weight: bold; color:green;'>"
@@ -37,10 +40,7 @@ PROCEEDING_STRING = "</span>"
 
 CHAT_STRING = "`{server}` checking in with IP: `{ip}`"
 
-GOOG_DNS_URL_BASE = "https://{username}:{password}@domains.google.com/nic/update?hostname={subdomain}&myip={ip_port}"
-
-SLACK_HOOK_URL_BASE = 'https://hooks.slack.com/services/{service_address}'
-DISCORD_HOOK_URL_BASE = 'https://discordapp.com/api/webhooks/{service_address}'
+GOOG_DNS_URL_BASE = "https://{username}:{password}@domains.google.com/nic/update?hostname={subdomain}&myip={ip}"
 
 
 def find_ip_address():
@@ -55,13 +55,6 @@ def find_ip_address():
     except Exception as e:
         write_error(e)
         raise e
-
-
-def notify_system(url, payload=None, headers=None):
-
-    notify_response = requests.post(url, json=payload, headers=headers)
-    if notify_response.status_code not in [200, 204]:
-        write_warning(notify_response.headers)
 
 
 def check_for_changes(ip_address):
@@ -87,25 +80,23 @@ def main_execution(program_args):
     ip_address = find_ip_address()
 
     if check_for_changes(ip_address) or program_args['notify']:
+
+        formatted_chat_string = CHAT_STRING.format(server=host, ip=ip_address)
+
         # Notify Slack channel
         write_info("Sending Address to Slack Channel")
-        formatted_chat_string = CHAT_STRING.format(server=host, ip=ip_address)
-        slack_payload = {"text": formatted_chat_string}
-        formatted_slack_url = SLACK_HOOK_URL_BASE.format(service_address=SLACK_WEBHOOK)
-        notify_system(formatted_slack_url, slack_payload)
+        Slack().notify(formatted_chat_string)
 
         # Notify Discord channel
         write_info("Sending Address to Discord Channel")
-        discord_payload = {"content": formatted_chat_string}
-        formatted_discord_url = DISCORD_HOOK_URL_BASE.format(service_address=DISCORD_WEBHOOK)
-        notify_system(formatted_discord_url, discord_payload, {"Content-Type": "application/json"})
+        Discord().notify(formatted_chat_string)
         
         # Notify Google DNS
         write_info("Sending Address to Google DNS")
-        ip_port_string = "{ip}".format(ip=ip_address)
+
         formatted_google_url = GOOG_DNS_URL_BASE.format(username=GOOGLE_USERNAME, password=GOOGLE_PASSWORD,
-                                                        subdomain=GOOGLE_DOMAIN, ip_port=ip_port_string)
-        notify_system(formatted_google_url)
+                                                        subdomain=GOOGLE_DOMAIN, ip=ip_address)
+        Webhook("Google DNS", formatted_google_url).api_post()
         
 
 if __name__ == "__main__":
