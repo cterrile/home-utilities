@@ -2,10 +2,8 @@
 
 Integration for Slack Incoming Webhooks.
 
-
 """
 
-from utilities.utils import write_info, write_warning
 
 from utilities.certs import DISCORD_WEBHOOK
 
