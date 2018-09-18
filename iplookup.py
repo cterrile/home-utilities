@@ -27,9 +27,9 @@ Examples:
 import os
 import json
 import requests
-from utilities.utils import write_info, write_error, write_warning, docopt_read
+from utilities.utils import write_info, write_error, determine_host, docopt_read
 from utilities.certs import GOOGLE_PASSWORD, GOOGLE_USERNAME, GOOGLE_DOMAIN
-from utilities.certs import DISCORD_WEBHOOK, SLACK_WEBHOOK, IP_FILE
+from utilities.certs import IP_FILE
 from integrations.slack import Slack
 from integrations.discord import Discord
 from integrations.Webhook import Webhook
@@ -75,7 +75,7 @@ def check_for_changes(ip_address):
 
 def main_execution(program_args):
 
-    host = os.environ['COMPUTERNAME']
+    host = determine_host()
     write_info("Retrieving IPV4 Address")
     ip_address = find_ip_address()
 

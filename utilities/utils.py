@@ -15,7 +15,14 @@ def evaluate_date(date):
     return new_date
 
 
-def docopt_read(doc,version):
+def determine_host():
+    if 'COMPUTERNAME' in os.environ.keys():
+        return os.environ['COMPUTERNAME']
+    else:
+        return os.environ['HOST']
+
+
+def docopt_read(doc, version):
     script_name = os.path.basename(sys.argv[0])
 
     command = doc.format(program_name=script_name,version=version)
