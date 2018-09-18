@@ -3,7 +3,7 @@ import sys
 import docopt
 import datetime
 import os
-
+from socket import gethostname
 
 def evaluate_date(date):
     new_date = None
@@ -18,8 +18,10 @@ def evaluate_date(date):
 def determine_host():
     if 'COMPUTERNAME' in os.environ.keys():
         return os.environ['COMPUTERNAME']
-    else:
+    elif 'HOST' in os.environ.keys():
         return os.environ['HOST']
+    else:
+        return gethostname()
 
 
 def docopt_read(doc, version):
