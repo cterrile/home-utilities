@@ -34,9 +34,9 @@ from integrations.slack import Slack
 from integrations.discord import Discord
 from integrations.Webhook import Webhook
 
-IP_URL = "https://www.iplocation.net/find-ip-address"
-PRECEDING_STRING = "Your IP Address is <span style='font-weight: bold; color:green;'>"
-PROCEEDING_STRING = "</span>"
+IP_URL = "http://checkip.dyndns.org"
+PRECEDING_STRING = "Current IP Address: "
+PROCEEDING_STRING = "</body></html>"
 
 CHAT_STRING = "`{server}` checking in with IP: `{ip}`"
 
