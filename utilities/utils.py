@@ -5,8 +5,9 @@ import datetime
 import os
 from socket import gethostname
 
+
 def evaluate_date(date):
-    new_date = None
+    """Returns datetime object when give a date string or 'yesterday'"""
     if date.lower() == "yesterday":
         new_date = datetime.datetime.today() - datetime.timedelta(days=1)
     else:
@@ -16,6 +17,7 @@ def evaluate_date(date):
 
 
 def determine_host():
+    """Determines the name of the operating host."""
     if 'COMPUTERNAME' in os.environ.keys():
         return os.environ['COMPUTERNAME']
     elif 'HOST' in os.environ.keys():
@@ -27,7 +29,7 @@ def determine_host():
 def docopt_read(doc, version):
     script_name = os.path.basename(sys.argv[0])
 
-    command = doc.format(program_name=script_name,version=version)
+    command = doc.format(program_name=script_name, version=version)
     arguments = docopt.docopt(command)
     return command, arguments
 

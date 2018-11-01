@@ -24,7 +24,7 @@ Examples:
     {program_name} notify
     Retrieves WAN IPV4 Address of sever and notifies systems regardless of any change.
 """
-import os
+
 import json
 import requests
 from utilities.utils import write_info, write_error, determine_host, docopt_read
@@ -40,10 +40,11 @@ PROCEEDING_STRING = "</body></html>"
 
 CHAT_STRING = "`{server}` checking in with IP: `{ip}`"
 
-GOOG_DNS_URL_BASE = "https://{username}:{password}@domains.google.com/nic/update?hostname={subdomain}&myip={ip}"
+GOOGLE_DNS_URL_BASE = "https://{username}:{password}@domains.google.com/nic/update?hostname={subdomain}&myip={ip}"
 
 
 def find_ip_address():
+    """Finds IPV4 Address of the operating host"""
     try:
         ip_response = requests.get(IP_URL)
         response_page = ip_response.text
@@ -58,6 +59,7 @@ def find_ip_address():
 
 
 def check_for_changes(ip_address):
+    """Checks current IP address against address stored in JSON file."""
     stored_ip_address = json.load(open(IP_FILE))
 
     if ip_address == stored_ip_address['ip']:
@@ -94,13 +96,11 @@ def main_execution(program_args):
         # Notify Google DNS
         write_info("Sending Address to Google DNS")
 
-        formatted_google_url = GOOG_DNS_URL_BASE.format(username=GOOGLE_USERNAME, password=GOOGLE_PASSWORD,
-                                                        subdomain=GOOGLE_DOMAIN, ip=ip_address)
+        formatted_google_url = GOOGLE_DNS_URL_BASE.format(username=GOOGLE_USERNAME, password=GOOGLE_PASSWORD,
+                                                          subdomain=GOOGLE_DOMAIN, ip=ip_address)
         Webhook("Google DNS", formatted_google_url).api_post()
         
 
 if __name__ == "__main__":
     command_doc, main_args = docopt_read(__doc__, '2.2')
     main_execution(main_args)
-
-
